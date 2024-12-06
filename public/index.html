@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MongoDB CRUD GUI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        form,
+        table {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>MongoDB CRUD 操作</h1>
+
+    <!-- Create -->
+    <!-- <form id="createForm">
+        <h2>データ追加</h2>
+        <input type="text" id="studentId" placeholder="学籍番号" required>
+        <input type="text" id="name" placeholder="名前" required>
+        <input type="number" id="grade" placeholder="学年" required>
+        <input type="text" id="class" placeholder="クラス" required>
+        <input type="number" id="attendanceNumber" placeholder="出席番号" required>
+        <button type="submit">追加</button>
+    </form> -->
+    <a href="detaIn.html">データの追加</a>
+
+    <!-- Read -->
+    <h2>データ一覧</h2>
+    <button id="loadData">データを取得</button>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>学籍番号</th>
+                <th>名前</th>
+                <th>学年</th>
+                <th>クラス</th>
+                <th>出席番号</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // APIのURL
+        const apiBase = "http://localhost:3000/api/students";
+
+        // Create (データ追加)
+        // document.getElementById("createForm").addEventListener("submit", async (e) => {
+        //     e.preventDefault();
+        //     const student = {
+        //         学籍番号: document.getElementById("studentId").value,
+        //         名前: document.getElementById("name").value,
+        //         学年: document.getElementById("grade").value,
+        //         クラス: document.getElementById("class").value + "組",
+        //         出席番号: document.getElementById("attendanceNumber").value,
+        //     };
+        //     await fetch(apiBase, {
+        //         method: "POST",
+        //         headers: { "Content-Type": "application/json" },
+        //         body: JSON.stringify(student),
+        //     });
+        //     alert("データが追加されました！");
+        //     loadData();
+        // });
+
+        // Read (データ取得)
+        const loadData = async () => {
+            const res = await fetch(apiBase);
+            const data = await res.json();
+            const tbody = document.querySelector("#dataTable tbody");
+            tbody.innerHTML = "";
+            data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+          <td>${item.学籍番号}</td>
+          <td>${item.名前}</td>
+          <td>${item.学年}</td>
+          <td>${item.クラス}</td>
+          <td>${item.出席番号}</td>
+          <td>
+            <button onclick="editStudent(${JSON.stringify(item)})">編集</button>
+            <button onclick="deleteStudent('${item.学籍番号}')">削除</button>
+
+          </td>
+        `;
+                tbody.appendChild(row);
+            });
+        };
+
+        // Delete (データ削除)
+        const deleteStudent = async (studentId) => {
+            await fetch(`${apiBase}/${studentId}`, { method: "DELETE" });
+            //alert("データが削除されました！");
+            loadData();
+        };
+
+
+        loadData();
+        // 初期データ読み込み
+        document.getElementById("loadData").addEventListener("click", loadData);
+    </script>
+</body>
+
+
+</html>
